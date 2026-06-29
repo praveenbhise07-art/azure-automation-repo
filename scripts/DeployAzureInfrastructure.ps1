@@ -1,35 +1,26 @@
-# Define Variables matching your selected settings
 $ResourceGroupName = "rg-automation-westus"
 $Location          = "westus"
 $VmSize            = "Standard_D2s_v3"
 $ImageName         = "Canonical:ubuntu-24_04-lts:server:latest"
 $VmList            = @("ubuntu-automation-vm")
 
-Write-Host "🚀 Starting End-to-End Azure Automation..." -ForegroundColor Cyan
+Connect-AzAccount -Identity
 
-# 1. Conditional Statement: Check and Create Resource Group
-$rg = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
-if ($null -eq $rg) {
-    Write-Host "Creating Resource Group: $ResourceGroupName in $Location..." -ForegroundColor Yellow
+if ($null -eq (Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue)) {
     New-AzResourceGroup -Name $ResourceGroupName -Location $Location -Force
-} else {
-    Write-Host "Resource Group $ResourceGroupName already exists." -ForegroundColor Green
 }
 
-# 2. Automation Task: Provision Virtual Machine Infrastructure using a LOOP
 foreach ($VmName in $VmList) {
-    Write-Host "Loop Processing: Provisioning Network and VM ($VmName) of size $VmSize..." -ForegroundColor Yellow
+    $RandomPassword = ConvertTo-SecureString -String ("P@ss!" + (Get-Random -Minimum 100000 -Maximum 999999) + "Bld!") -AsPlainText -Force
+    $VmCredential = New-Object System.Management.Automation.PSCredential ("azureuser", $RandomPassword)
 
-    # Corrected parameters map (Removed the invalid GeneratePassword property)
     $vmParams = @{
         ResourceGroupName = $ResourceGroupName
         Location          = $Location
         Name              = $VmName
-        Image             = $ImageName
+        ImageName         = $ImageName
         Size              = $VmSize
+        Credential        = $VmCredential
     }
-
     New-AzVM @vmParams
 }
-
-Write-Host "✅ Loop finished. Deployment Completed Successfully!" -ForegroundColor Green
