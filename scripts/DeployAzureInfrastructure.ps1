@@ -1,3 +1,7 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
+param()
+
 $ResourceGroupName = "rg-automation-westus"
 $Location          = "westus"
 $VmSize            = "Standard_D2s_v3"
