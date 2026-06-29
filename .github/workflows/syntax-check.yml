@@ -1,0 +1,26 @@
+name: Script Validation CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch code repository
+        uses: actions/checkout@v4
+
+      - name: Run Script Analyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $errors = Invoke-ScriptAnalyzer -Path ./scripts/ -Recurse
+          if ($errors) {
+              $errors | Format-Table
+              exit 1
+          } else {
+              Write-Host "Validation complete. No syntax issues found!"
+          }
