@@ -28,3 +28,4 @@ foreach ($VmName in $VmList) {
     }
     New-AzVM @vmParams
 }
+# Testing the CI pipeline automation
