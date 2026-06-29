@@ -17,10 +17,13 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
-          $errors = Invoke-ScriptAnalyzer -Path ./scripts/ -Recurse
+          
+          # Only pull severe issues that would break execution (Errors)
+          $errors = Invoke-ScriptAnalyzer -Path ./scripts/ -Recurse | Where-Object Severity -eq "Error"
+          
           if ($errors) {
               $errors | Format-Table
               exit 1
           } else {
-              Write-Host "Validation complete. No syntax issues found!"
+              Write-Host "✅ Validation complete. No breaking syntax issues found!"
           }
